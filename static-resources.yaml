@@ -35,8 +35,41 @@ static_resources:
                     patterns:
                       exact: "x-auth"
               failure_mode_allow: false
-                
+          - name: envoy.filters.http.local_ratelimit
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+              stat_prefix: http_local_rate_limiter
+              enable_x_ratelimit_headers: DRAFT_VERSION_03
+              token_bucket:
+                max_tokens: 5
+                tokens_per_fill: 1
+                fill_interval: 10s              
+              filter_enabled:
+                runtime_key: local_rate_limit_enabled
+                default_value:
+                  numerator: 100
+                  denominator: HUNDRED
+              filter_enforced:
+                runtime_key: local_rate_limit_enforced
+                default_value:
+                  numerator: 0
+                  denominator: HUNDRED
+              request_headers_to_add_when_not_enforced:
+                - append: false
+                  header:
+                    key: x-rate-limit-passou
+                    value: 'true'
+
+              response_headers_to_add:
+                - append: false
+                  header:
+                    key: x-local-rate-limit
+                    value: 'true'                  
+
+              local_rate_limit_per_downstream_connection: false
           - name: envoy.filters.http.router
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
 
           access_log:
           - name: envoy.access_loggers.stdout
@@ -46,7 +79,7 @@ static_resources:
     #         name: local_route
             virtual_hosts:
             - name: all_domains
-              domains: ["*"]
+              domains: ["*"]                              
               routes:
               - match:
                   prefix: "/"                

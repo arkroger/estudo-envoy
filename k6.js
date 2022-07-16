@@ -11,8 +11,8 @@ export const options = {
     //     {duration: '10s', target: 0}
     // ],
     stages: [
-            {duration: '1s', target: 100},            
-            {duration: '30s', target: 100}                         
+            {duration: '1s', target: 100},
+            {duration: '9s', target: 100}
         ],
     thresholds: {
         'http_req_duration': ['p(99)<1000'], // 99% of requests must complete below 1.5s

@@ -4,13 +4,11 @@ var app = express();
 var port = 3001;
 
 var probabilityCaos = 0;
-var slow = false;
 
 app.use(express.json()) 
 
 app.post('/caos', function(req, res) {
-  probabilityCaos = req.body["probability"]
-  slow = req.body["slow"]
+  probabilityCaos = req.body["probability"]  
   res.status(200).end();
 });
 
@@ -19,6 +17,7 @@ app.get('/', function(req, res) {
 
   // console.log("Request", req.rawHeaders)
   console.log("Request:", req.headers['x-request-id'])
+  console.log("Request: ", req.rawHeaders)
 
 
   var response = 'fast'
@@ -31,16 +30,6 @@ app.get('/', function(req, res) {
     }
   }
 
-  if (slow) {
-    response = 'slow'
-    sleep(2000).then(() => {
-      
-    }).catch(() => {
-      console.log('catch')
-    })
-  }
-
-  
 
 
   axios.get('http://localhost:3002')
